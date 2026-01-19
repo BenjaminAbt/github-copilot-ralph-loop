@@ -74,17 +74,12 @@ $Model = "gpt-5.1-codex-mini"
 ## Sample Files Generated
 
 ```shell
-RALPH-LOOP
-├── ralph
-│   │
-│   └── state
-│       ├── learnings.md
-│       └── progress.txt
+│
 ├── src
 │   └── HelloWorld
 │       ├── bin
 │       ├── obj
-│       ├── Greeter.cs
+│       ├── GreetingProvider.cs
 │       ├── HelloWorld.csproj
 │       └── Program.cs
 │
@@ -92,9 +87,8 @@ RALPH-LOOP
 │   └── HelloWorld.Tests
 │       ├── bin
 │       ├── obj
-│       ├── HelloSelectorTests.cs
-│       ├── HelloWorld.Tests.csproj
-│       └── UnitTest1.cs
+│       ├── GreetingProviderTests.cs
+│       └── HelloWorld.Tests.csproj
 │
 └── HelloWorld.slnx
 ```
@@ -109,104 +103,101 @@ RALPH-LOOP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Starting iteration 1 of 10
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Model: gpt-5-mini
+  Prompt length: 3958 characters
+  Mode: --yolo (autonomous)
+  Timeout: 600 seconds
 
-Total usage est:       0 Premium requests
-Total duration (API):  1m 10.308s
-Total duration (wall): 1m 20.419s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           312.9k input, 4.2k output, 298.1k cache read (Est. 0 Premium requests)
+  ✓ Running GitHub Copilot CLI - Complete (78,5s)
+
+  Duration: 78,48 seconds
+  Exit Code: 0
+
+  Output:
+   + ------------------------------------------------------------
+  Reading project progress and PRD files to select the next user story per the iteration protocol; will open progress, prd.json, AGENTS.md, and learnings in parallel. Proceeding to read those files now.
+  Creating the HelloWorld project directories so files can be added, then creating project files and updating progress, and finally building to verifyΓÇöthese steps ensure the environment is prepared before file creation and that build confirms success.
+  US-001 implemented: created solution and console project, enabled nullable, implicit usings, and TreatWarningsAsErrors; build succeeded. Progress updated to mark US-001 completed. Next step: implement US-002 (greeting logic) ΓÇö proceed?
+   + ------------------------------------------------------------
+
+  Status/Info:
+   + ------------------------------------------------------------
+  Total usage est:       0 Premium requests
+  Total duration (API):  1m 3.243s
+  Total code changes:    0 lines added, 0 lines removed
+  Usage by model:
+      gpt-5-mini           261.7k input, 5.1k output, 239.6k cache read (Est. 0 Premium requests)
+  Total duration (wall): 1m 16.932s
+   + ------------------------------------------------------------
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Starting iteration 2 of 10
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Model: gpt-5-mini
+  Prompt length: 3958 characters
+  Mode: --yolo (autonomous)
+  Timeout: 600 seconds
 
-Total usage est:       0 Premium requests
-Total duration (API):  44s
-Total duration (wall): 47s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           67.2k input, 3.2k output, 51.1k cache read (Est. 0 Premium requests)
+  ✓ Running GitHub Copilot CLI - Complete (87,8s)
+
+  Duration: 87,85 seconds
+  Exit Code: 0
+
+  Output:
+   + ------------------------------------------------------------
+  Reading progress, PRD, AGENTS, and learnings to select the next user story and implement it. Running file reads and reporting intent.
+  Running a file listing to locate the HelloWorld project files before editing to implement US-002.
+  Building and running the project to verify the application prints exactly one randomized greeting and the build succeeds.
+  Updating Program.cs to choose and print one random greeting and updating progress.txt to mark US-002 complete; then building to verify. I'll apply edits and run dotnet restore && dotnet build.
+  Built successfully and updated progress to mark US-002 as current and completed; Program now prints one randomized greeting with language.
+   + ------------------------------------------------------------
+
+  Status/Info:
+   + ------------------------------------------------------------
+  Total duration (API):  1m 21.65s
+  Total duration (wall): 1m 26.463s
+  Total code changes:    0 lines added, 0 lines removed
+  Usage by model:
+      gpt-5-mini           153.0k input, 7.8k output, 145.7k cache read (Est. 0 Premium requests)
+  Total usage est:       0 Premium requests
+   + ------------------------------------------------------------
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Starting iteration 3 of 10
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Model: gpt-5-mini
+  Prompt length: 3958 characters
+  Mode: --yolo (autonomous)
+  Timeout: 600 seconds
 
-Total usage est:       0 Premium requests
-Total duration (API):  1m 41.443s
-Total duration (wall): 1m 49.425s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           564.0k input, 3.6k output, 525.4k cache read (Est. 0 Premium requests)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Starting iteration 4 of 10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ Running GitHub Copilot CLI - Complete (165,5s)
 
-Total usage est:       0 Premium requests
-Total duration (API):  2m 22.341s
-Total duration (wall): 2m 28.481s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           266.5k input, 9.2k output, 259.1k cache read (Est. 0 Premium requests)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Starting iteration 5 of 10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Duration: 165,48 seconds
+  Exit Code: 0
 
-Total usage est:       0 Premium requests
-Total duration (API):  1m 51.235s
-Total duration (wall): 2m 6.651s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           578.1k input, 6.4k output, 562.4k cache read (Est. 0 Premium requests)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Starting iteration 6 of 10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Output:
+   + ------------------------------------------------------------
+  Reading progress, PRD, AGENTS, and learnings to determine the next user story to implement. Reporting intent and opening the four files now.
+  Reading project files to find current projects and tests, then will implement test project for US-003.
+  Running a quick read of the solution file to add the test project entry into it.
+  Creating GreetingProvider, test project, updating Program, solution, and progress file in one change. Running these file edits now.
+  Creating tests folder and files, then restoring and running tests to verify the GreetingProvider implementation. I'll run PowerShell to create directories/files and execute dotnet restore && dotnet test.
+  Inspecting the generated test project file to diagnose the XML parse error; running report_intent and reading the file.
+  Created GreetingProvider, wired Program to use it, added xUnit test project and a test that validates greeting selection, updated solution and progress.
+  Next steps: run or inspect results locally; tests passed here.
+   + ------------------------------------------------------------
 
-Total usage est:       0 Premium requests
-Total duration (API):  3m 4.248s
-Total duration (wall): 3m 10.498s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           589.7k input, 10.8k output, 566.5k cache read (Est. 0 Premium requests)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Starting iteration 7 of 10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Total usage est:       0 Premium requests
-Total duration (API):  43s
-Total duration (wall): 46s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           66.6k input, 3.4k output, 62.7k cache read (Est. 0 Premium requests)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Starting iteration 8 of 10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Total usage est:       0 Premium requests
-Total duration (API):  36s
-Total duration (wall): 39s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5-mini           23.8k input, 3.2k output, 22.5k cache read (Est. 0 Premium requests)
-
-╔═══════════════════════════════════════════════════════════════╗
-║              All stories complete! Great success!             ║
-╚═══════════════════════════════════════════════════════════════╝
+  Status/Info:
+   + ------------------------------------------------------------
+  Total duration (API):  2m 30.846s
+  Total duration (wall): 2m 44.037s
+  Total code changes:    0 lines added, 0 lines removed
+  Usage by model:
+      gpt-5-mini           467.7k input, 11.6k output, 439.6k cache read (Est. 0 Premium requests)
+  Total usage est:       0 Premium requests
+   + ------------------------------------------------------------
 ```
 
-You can also use premium models by setting the `$Model` variable in `ralph.ps1` to e.g. `gpt-5.1-codex-mini`.
-
-```shell
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Starting iteration 1 of 10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Total usage est:       0.33 Premium requests
-Total duration (API):  2m 39.786s
-Total duration (wall): 2m 49.081s
-Total code changes:    0 lines added, 0 lines removed
-Usage by model:
-    gpt-5.1-codex-mini   460.5k input, 11.0k output, 451.8k cache read (Est. 0.33 Premium requests)
-```
 
 ## Credits
 
