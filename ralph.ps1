@@ -266,17 +266,13 @@ function Run-Iteration {
                 Write-Host "  Status/Info:" -ForegroundColor Cyan
                 Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
                 $stderr.Split("`n") | ForEach-Object {
-                    if ($_.Trim()) {
-                        Write-Host "  $_" -ForegroundColor DarkGray
-                    }
+                    Write-Host "  $_" -ForegroundColor DarkGray
                 }
             } else {
-                Write-Host "  Errors/Warnings:" -ForegroundColor Yellow
+                Write-Host "  Errors/Warnings (Complete Details):" -ForegroundColor Yellow
                 Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
                 $stderr.Split("`n") | ForEach-Object {
-                    if ($_.Trim()) {
-                        Write-Host "  $_" -ForegroundColor Red
-                    }
+                    Write-Host "  $_" -ForegroundColor Red
                 }
             }
             Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
@@ -293,7 +289,35 @@ function Run-Iteration {
     }
     catch {
         Write-Host ""
-        Write-Host "  ✗ Error running Copilot CLI: $_" -ForegroundColor Red
+        Write-Host "  ✗ Error running Copilot CLI" -ForegroundColor Red
+        Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+        Write-Host "  Exception: $($_.Exception.Message)" -ForegroundColor Red
+        if ($_.Exception.InnerException) {
+            Write-Host "  Inner Exception: $($_.Exception.InnerException.Message)" -ForegroundColor Red
+        }
+        Write-Host "  Stack Trace:" -ForegroundColor Red
+        Write-Host "$($_.ScriptStackTrace)" -ForegroundColor DarkRed
+        Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+        
+        # Try to get any captured output before the error
+        if ($stdoutBuilder -and $stdoutBuilder.Length -gt 0) {
+            Write-Host "  Captured Output before error:" -ForegroundColor Yellow
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+            $stdoutBuilder.ToString().Split("`n") | ForEach-Object {
+                Write-Host "  $_" -ForegroundColor Gray
+            }
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+        }
+        
+        if ($stderrBuilder -and $stderrBuilder.Length -gt 0) {
+            Write-Host "  Captured Errors before exception:" -ForegroundColor Yellow
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+            $stderrBuilder.ToString().Split("`n") | ForEach-Object {
+                Write-Host "  $_" -ForegroundColor Red
+            }
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+        }
+        
         if ($process -and -not $process.HasExited) {
             $process.Kill($true)
         }
