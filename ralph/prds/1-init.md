@@ -11,7 +11,7 @@ As a developer, I want a new .NET 10 solution with a console application scaffol
 - Use modern .NET defaults
 
 ## Acceptance Criteria
-- A `.sln` file exists at the repository root
+- A `.slnx` file exists at the repository root
 - The console project is located at `src/HelloWorld`
 - Target framework is `net10.0`
 - Nullable reference types are enabled

@@ -11,6 +11,7 @@ As a developer, I want unit tests for the greeting logic so that the selection b
 - Tests covering greeting selection behavior
 
 ## Acceptance Criteria
+- The test project is part of the existing solution
 - The test project references the HelloWorld project
 - Tests validate:
   - only predefined greetings can be returned

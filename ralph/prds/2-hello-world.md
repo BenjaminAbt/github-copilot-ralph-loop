@@ -11,6 +11,7 @@ As a user, I want the application to print a random greeting in different langua
 - Random selection on each application start
 
 ## Acceptance Criteria
+- Project is added to the existing solution
 - Running the application prints exactly one greeting
 - The output includes:
   - the greeting text
