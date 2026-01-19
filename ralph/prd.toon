@@ -1,0 +1,79 @@
+branch: ralph/hello-world-net10
+
+task:
+  description: >
+    Initialize a .NET 10 HelloWorld solution with randomized multilingual greetings
+    and unit tests. The implementation must be deterministic enough to be testable
+    and follow modern SDK-style project conventions.
+
+context:
+  framework: .NET 10.0
+  language: C#
+  build: dotnet build
+  test: dotnet test
+
+stories:
+
+  - id: US-001
+    title: .NET Initialization
+    priority: 1
+    description: >
+      Create a new .NET 10 solution with a console application scaffolded
+      in a standard repository layout to serve as a clean foundation
+      for further development.
+
+    acceptance:
+      - A .slnx file exists at the repository root
+      - Console project exists at src/HelloWorld
+      - Target framework is net10.0
+      - Nullable reference types are enabled
+      - Implicit usings are enabled
+      - Warnings are treated as errors
+
+    notes:
+      - Use modern SDK-style defaults
+      - Set TreatWarningsAsErrors=true
+      - Set Nullable=enable
+      - Solution must use .slnx format
+
+
+  - id: US-002
+    title: Hello World
+    priority: 2
+    description: >
+      Implement greeting logic so the application prints exactly one
+      random greeting in a different language on each startup.
+
+    acceptance:
+      - Project is added to the solution
+      - Application prints exactly one greeting
+      - Output includes greeting text
+      - Output includes language
+      - Greeting is selected from a predefined in-code list
+      - Application runs via dotnet run
+
+    notes:
+      - Use a fixed list of (Language, Greeting) pairs
+      - Randomize selection per startup
+      - Output format example:
+        "<Greeting> (<Language>)"
+      - Output must remain deterministic enough for unit testing
+
+
+  - id: US-003
+    title: Tests
+    priority: 3
+    description: >
+      Add unit tests to validate greeting selection logic independently
+      from console output.
+
+    acceptance:
+      - Test project exists at tests/HelloWorld.Tests
+      - Test project references HelloWorld
+      - Tests validate only predefined greetings are returned
+      - All tests pass
+
+    notes:
+      - Use xUnit (preferred)
+      - Test a GreetingProvider or service
+      - Avoid asserting console output

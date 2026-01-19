@@ -53,7 +53,7 @@ $Model = "gpt-5.1-codex-mini"
 ## Repo Structure
 
 - **ralph/** - Prompts, PRDs, and loop state
-  - **ralph/prd.json** - Task definitions (product requirements) for the loop
+  - **ralph/prd.toon** - Task definitions (product requirements) for the loop
   - **ralph/state/** - Loop progress
   - **ralph/AGENTS.md** - Instructions for coding agents
   - **ralph/learnings.md** - Loop learnings and observations
