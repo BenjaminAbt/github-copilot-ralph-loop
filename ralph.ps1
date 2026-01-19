@@ -101,6 +101,44 @@ function Update-Iteration {
     $content | Set-Content -Path $ProgressFile -Encoding UTF8
 }
 
+function Show-Spinner {
+    param(
+        [scriptblock]$Action,
+        [string]$Message = "Processing"
+    )
+
+    $spinChars = @('⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏')
+    $spinIndex = 0
+    $job = Start-Job -ScriptBlock $Action
+    
+    Write-Host ""
+    $cursorTop = [Console]::CursorTop
+    $startTime = Get-Date
+    
+    try {
+        while ($job.State -eq 'Running') {
+            $elapsed = (Get-Date) - $startTime
+            [Console]::SetCursorPosition(0, $cursorTop)
+            $spin = $spinChars[$spinIndex % $spinChars.Length]
+            $durationText = "($($elapsed.TotalSeconds.ToString('F1'))s)"
+            Write-Host "  $spin $Message... $durationText" -NoNewline -ForegroundColor Cyan
+            $spinIndex++
+            Start-Sleep -Milliseconds 100
+        }
+        
+        $finalElapsed = (Get-Date) - $startTime
+        [Console]::SetCursorPosition(0, $cursorTop)
+        Write-Host "  ✓ $Message - Complete ($($finalElapsed.TotalSeconds.ToString('F1'))s)" -ForegroundColor Green
+        Write-Host ""
+        
+        $result = Receive-Job -Job $job -Wait
+        return $result
+    }
+    finally {
+        Remove-Job -Job $job -Force
+    }
+}
+
 function Run-Iteration {
     param(
         [int]$Iteration,
@@ -116,15 +154,83 @@ function Run-Iteration {
     Update-Iteration -ProgressFile $ProgressFile -Iteration $Iteration
 
     $prompt = Get-Content -Path $PromptFile -Raw
+    
+    Write-Host "  Model: $Model" -ForegroundColor Cyan
+    Write-Host "  Prompt length: $($prompt.Length) characters" -ForegroundColor Cyan
+    Write-Host "  Mode: --yolo (autonomous)" -ForegroundColor Cyan
+    Write-Host ""
 
-    copilot --yolo --model $Model --prompt "$prompt"
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Copilot CLI exited with error code $LASTEXITCODE" -ForegroundColor Red
-        return $false
+    $startTime = Get-Date
+    
+    # Create temp files for output capture
+    $stdoutFile = [System.IO.Path]::GetTempFileName()
+    $stderrFile = [System.IO.Path]::GetTempFileName()
+    
+    try {
+        $result = Show-Spinner -Message "Running GitHub Copilot CLI" -Action {
+            $process = Start-Process -FilePath "copilot" `
+                -ArgumentList "--yolo", "--model", $using:Model, "--prompt", $using:prompt `
+                -NoNewWindow `
+                -Wait `
+                -PassThru `
+                -RedirectStandardOutput $using:stdoutFile `
+                -RedirectStandardError $using:stderrFile
+            
+            return @{
+                ExitCode = $process.ExitCode
+                StartTime = $using:startTime
+                EndTime = Get-Date
+            }
+        }
+        
+        $duration = $result.EndTime - $result.StartTime
+        
+        # Read output
+        $stdout = Get-Content -Path $stdoutFile -Raw -ErrorAction SilentlyContinue
+        $stderr = Get-Content -Path $stderrFile -Raw -ErrorAction SilentlyContinue
+        
+        # Display detailed results
+        Write-Host "  Duration: $($duration.TotalSeconds.ToString('F2')) seconds" -ForegroundColor Magenta
+        Write-Host "  Exit Code: $($result.ExitCode)" -ForegroundColor $(if ($result.ExitCode -eq 0) { 'Green' } else { 'Red' })
+        
+        if ($stdout -and $stdout.Trim()) {
+            Write-Host ""
+            Write-Host "  Output:" -ForegroundColor White
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+            $stdout.Split("`n") | ForEach-Object {
+                if ($_.Trim()) {
+                    Write-Host "  $_" -ForegroundColor Gray
+                }
+            }
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+        }
+        
+        if ($stderr -and $stderr.Trim()) {
+            Write-Host ""
+            Write-Host "  Errors/Warnings:" -ForegroundColor Yellow
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+            $stderr.Split("`n") | ForEach-Object {
+                if ($_.Trim()) {
+                    Write-Host "  $_" -ForegroundColor Red
+                }
+            }
+            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+        }
+        
+        if ($result.ExitCode -ne 0) {
+            Write-Host ""
+            Write-Host "  Copilot CLI exited with error code $($result.ExitCode)" -ForegroundColor Red
+            return $false
+        }
+        
+        Write-Host ""
+        return $true
     }
-
-    return $true
+    finally {
+        # Cleanup temp files
+        Remove-Item -Path $stdoutFile -ErrorAction SilentlyContinue
+        Remove-Item -Path $stderrFile -ErrorAction SilentlyContinue
+    }
 }
 
 $null = Register-EngineEvent -SourceIdentifier ConsoleCancelEvent -Action {
