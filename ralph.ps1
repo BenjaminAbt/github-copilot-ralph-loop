@@ -13,7 +13,7 @@ $Model = "gpt-5-mini"
 # $Model = "gpt-5.1-codex-mini"
 
 $ProgressFile = Join-Path $scriptRoot "ralph\state\progress.txt"
-$PrdsPath = Join-Path $scriptRoot "ralph\prds"
+$PrdFile = Join-Path $scriptRoot "ralph\prd.json"
 $PromptFile = Join-Path $scriptRoot "ralph\prompt.md"
 
 function Write-Banner {
@@ -26,18 +26,25 @@ function Write-Banner {
 
 function Ensure-RequiredFiles {
     param(
-        [string]$PrdsPath,
+        [string]$PrdFile,
         [string]$PromptFile
     )
 
-    if (-not (Test-Path $PrdsPath)) {
-        Write-Host "Error: PRDs folder not found: $PrdsPath" -ForegroundColor Red
+    if (-not (Test-Path $PrdFile)) {
+        Write-Host "Error: PRD file not found: $PrdFile" -ForegroundColor Red
         exit 1
     }
 
-    $prdFiles = Get-ChildItem -Path $PrdsPath -Filter "*.md" -File
-    if ($prdFiles.Count -eq 0) {
-        Write-Host "Error: No PRD files found in $PrdsPath" -ForegroundColor Red
+    # Validate JSON structure
+    try {
+        $prdContent = Get-Content -Path $PrdFile -Raw | ConvertFrom-Json
+        if (-not $prdContent) {
+            Write-Host "Error: PRD file is empty or invalid JSON: $PrdFile" -ForegroundColor Red
+            exit 1
+        }
+    }
+    catch {
+        Write-Host "Error: Failed to parse PRD JSON file: $_" -ForegroundColor Red
         exit 1
     }
 
@@ -267,11 +274,22 @@ function Run-Iteration {
         
         if ($stderr -and $stderr.Trim()) {
             Write-Host ""
-            Write-Host "  Errors/Warnings:" -ForegroundColor Yellow
-            Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
-            $stderr.Split("`n") | ForEach-Object {
-                if ($_.Trim()) {
-                    Write-Host "  $_" -ForegroundColor Red
+            # Show as Info when successful, as Errors when failed
+            if ($process.ExitCode -eq 0) {
+                Write-Host "  Status/Info:" -ForegroundColor Cyan
+                Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+                $stderr.Split("`n") | ForEach-Object {
+                    if ($_.Trim()) {
+                        Write-Host "  $_" -ForegroundColor DarkGray
+                    }
+                }
+            } else {
+                Write-Host "  Errors/Warnings:" -ForegroundColor Yellow
+                Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
+                $stderr.Split("`n") | ForEach-Object {
+                    if ($_.Trim()) {
+                        Write-Host "  $_" -ForegroundColor Red
+                    }
                 }
             }
             Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
@@ -314,7 +332,7 @@ $null = Register-EngineEvent -SourceIdentifier ConsoleCancelEvent -Action {
 }
 
 Write-Banner
-Ensure-RequiredFiles -PrdsPath $PrdsPath -PromptFile $PromptFile
+Ensure-RequiredFiles -PrdFile $PrdFile -PromptFile $PromptFile
 Initialize-ProgressFile -ProgressFile $ProgressFile
 
 $iteration = (Get-Iteration -ProgressFile $ProgressFile) + 1

@@ -3,7 +3,7 @@
 ## Project Overview
 This is a simple .NET 10 console application that prints exactly one random greeting in different languages on each run.  
 The project follows a standard repository structure with application code under `src/HelloWorld` and unit tests under `tests/HelloWorld.Tests`.  
-The purpose of this file is to guide coding agents to understand project structure, build steps, testing commands, and conventions. :contentReference[oaicite:1]{index=1}
+The purpose of this file is to guide coding agents to understand project structure, build steps, testing commands, and conventions.
 
 ## Tech Stack
 - .NET 10 (net10.0)
@@ -18,15 +18,18 @@ The purpose of this file is to guide coding agents to understand project structu
 ## Key Commands
 
 ### Build & Run
+
 - Restore packages and build:  
   ```bash
   dotnet restore
   dotnet build
-```
+  ```
+
 - Run the application:  
   ```bash
    dotnet run --project src/HelloWorld
   ```
+
 - Run tests and see results:
     ```bash
     dotnet test tests/HelloWorld.Tests
