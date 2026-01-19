@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [int]$MaxIterations = 10
+    [int]$MaxIterations = 10,
+    [int]$TimeoutSeconds = 600
 )
 
 $ErrorActionPreference = "Stop"
@@ -144,7 +145,8 @@ function Run-Iteration {
         [int]$Iteration,
         [int]$MaxIterations,
         [string]$ProgressFile,
-        [string]$PromptFile
+        [string]$PromptFile,
+        [int]$TimeoutSeconds
     )
 
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Yellow
@@ -158,40 +160,98 @@ function Run-Iteration {
     Write-Host "  Model: $Model" -ForegroundColor Cyan
     Write-Host "  Prompt length: $($prompt.Length) characters" -ForegroundColor Cyan
     Write-Host "  Mode: --yolo (autonomous)" -ForegroundColor Cyan
+    Write-Host "  Timeout: $TimeoutSeconds seconds" -ForegroundColor Cyan
     Write-Host ""
 
     $startTime = Get-Date
     
-    # Create temp files for output capture
-    $stdoutFile = [System.IO.Path]::GetTempFileName()
-    $stderrFile = [System.IO.Path]::GetTempFileName()
-    
     try {
-        $result = Show-Spinner -Message "Running GitHub Copilot CLI" -Action {
-            $process = Start-Process -FilePath "copilot" `
-                -ArgumentList "--yolo", "--model", $using:Model, "--prompt", $using:prompt `
-                -NoNewWindow `
-                -Wait `
-                -PassThru `
-                -RedirectStandardOutput $using:stdoutFile `
-                -RedirectStandardError $using:stderrFile
-            
-            return @{
-                ExitCode = $process.ExitCode
-                StartTime = $using:startTime
-                EndTime = Get-Date
+        # Start process with output capture
+        $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $processInfo.FileName = "copilot"
+        # Use ArgumentList to properly handle arguments with spaces
+        $processInfo.ArgumentList.Add("--yolo")
+        $processInfo.ArgumentList.Add("--model")
+        $processInfo.ArgumentList.Add($Model)
+        $processInfo.ArgumentList.Add("--prompt")
+        $processInfo.ArgumentList.Add($prompt)
+        $processInfo.UseShellExecute = $false
+        $processInfo.CreateNoWindow = $true
+        $processInfo.RedirectStandardOutput = $true
+        $processInfo.RedirectStandardError = $true
+        
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo = $processInfo
+        
+        # String builders for output capture
+        $stdoutBuilder = New-Object System.Text.StringBuilder
+        $stderrBuilder = New-Object System.Text.StringBuilder
+        
+        # Event handlers for async output reading
+        $stdoutEvent = Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action {
+            if ($EventArgs.Data) {
+                $null = $Event.MessageData.AppendLine($EventArgs.Data)
             }
+        } -MessageData $stdoutBuilder
+        
+        $stderrEvent = Register-ObjectEvent -InputObject $process -EventName ErrorDataReceived -Action {
+            if ($EventArgs.Data) {
+                $null = $Event.MessageData.AppendLine($EventArgs.Data)
+            }
+        } -MessageData $stderrBuilder
+        
+        Write-Host "  ⠋ Running GitHub Copilot CLI..." -ForegroundColor Cyan
+        $cursorTop = [Console]::CursorTop - 1
+        
+        $null = $process.Start()
+        $process.BeginOutputReadLine()
+        $process.BeginErrorReadLine()
+        
+        $spinChars = @('⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏')
+        $spinIndex = 0
+        
+        # Monitor process with timeout
+        while (-not $process.HasExited) {
+            $elapsed = (Get-Date) - $startTime
+            
+            if ($elapsed.TotalSeconds -gt $TimeoutSeconds) {
+                Write-Host ""
+                Write-Host "  ⚠ Timeout after $TimeoutSeconds seconds - killing process" -ForegroundColor Red
+                $process.Kill($true)
+                $process.WaitForExit(5000)
+                return $false
+            }
+            
+            [Console]::SetCursorPosition(0, $cursorTop)
+            $spin = $spinChars[$spinIndex % $spinChars.Length]
+            $durationText = "($($elapsed.TotalSeconds.ToString('F1'))s)"
+            Write-Host "  $spin Running GitHub Copilot CLI... $durationText" -NoNewline -ForegroundColor Cyan
+            $spinIndex++
+            
+            Start-Sleep -Milliseconds 100
         }
         
-        $duration = $result.EndTime - $result.StartTime
+        $endTime = Get-Date
+        $duration = $endTime - $startTime
         
-        # Read output
-        $stdout = Get-Content -Path $stdoutFile -Raw -ErrorAction SilentlyContinue
-        $stderr = Get-Content -Path $stderrFile -Raw -ErrorAction SilentlyContinue
+        # Wait for output to be fully captured
+        Start-Sleep -Milliseconds 200
         
-        # Display detailed results
+        [Console]::SetCursorPosition(0, $cursorTop)
+        Write-Host "  ✓ Running GitHub Copilot CLI - Complete ($($duration.TotalSeconds.ToString('F1'))s)" -ForegroundColor Green
+        Write-Host ""
+        
+        # Unregister events
+        Unregister-Event -SourceIdentifier $stdoutEvent.Name -ErrorAction SilentlyContinue
+        Unregister-Event -SourceIdentifier $stderrEvent.Name -ErrorAction SilentlyContinue
+        
+        # Get captured output
+        $stdout = $stdoutBuilder.ToString()
+        $stderr = $stderrBuilder.ToString()
+        
+        # Display results
         Write-Host "  Duration: $($duration.TotalSeconds.ToString('F2')) seconds" -ForegroundColor Magenta
-        Write-Host "  Exit Code: $($result.ExitCode)" -ForegroundColor $(if ($result.ExitCode -eq 0) { 'Green' } else { 'Red' })
+        Write-Host "  Exit Code: $($process.ExitCode)" -ForegroundColor $(if ($process.ExitCode -eq 0) { 'Green' } else { 'Red' })
         
         if ($stdout -and $stdout.Trim()) {
             Write-Host ""
@@ -217,19 +277,34 @@ function Run-Iteration {
             Write-Host "  " + ("-" * 60) -ForegroundColor DarkGray
         }
         
-        if ($result.ExitCode -ne 0) {
+        if ($process.ExitCode -ne 0) {
             Write-Host ""
-            Write-Host "  Copilot CLI exited with error code $($result.ExitCode)" -ForegroundColor Red
+            Write-Host "  ⚠ Copilot CLI exited with error code $($process.ExitCode)" -ForegroundColor Red
             return $false
         }
         
         Write-Host ""
         return $true
     }
+    catch {
+        Write-Host ""
+        Write-Host "  ✗ Error running Copilot CLI: $_" -ForegroundColor Red
+        if ($process -and -not $process.HasExited) {
+            $process.Kill($true)
+        }
+        return $false
+    }
     finally {
-        # Cleanup temp files
-        Remove-Item -Path $stdoutFile -ErrorAction SilentlyContinue
-        Remove-Item -Path $stderrFile -ErrorAction SilentlyContinue
+        # Cleanup events
+        if ($stdoutEvent) {
+            Unregister-Event -SourceIdentifier $stdoutEvent.Name -ErrorAction SilentlyContinue
+        }
+        if ($stderrEvent) {
+            Unregister-Event -SourceIdentifier $stderrEvent.Name -ErrorAction SilentlyContinue
+        }
+        if ($process) {
+            $process.Dispose()
+        }
     }
 }
 
@@ -254,7 +329,7 @@ while ($iteration -le $MaxIterations) {
         exit 0
     }
 
-    if (-not (Run-Iteration -Iteration $iteration -MaxIterations $MaxIterations -ProgressFile $ProgressFile -PromptFile $PromptFile)) {
+    if (-not (Run-Iteration -Iteration $iteration -MaxIterations $MaxIterations -ProgressFile $ProgressFile -PromptFile $PromptFile -TimeoutSeconds $TimeoutSeconds)) {
         Write-Host "Iteration $iteration failed. Check logs and retry." -ForegroundColor Red
         exit 1
     }
