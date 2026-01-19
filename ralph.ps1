@@ -13,7 +13,7 @@ Set-Location $scriptRoot
 $Model = "gpt-5.1-codex-mini"
 
 $ProgressFile = Join-Path $scriptRoot "ralph\state\progress.txt"
-$PrdFile = Join-Path $scriptRoot "ralph\prd.toon"
+$PrdFile = Join-Path $scriptRoot "ralph\prd.json"
 $PromptFile = Join-Path $scriptRoot "ralph\prompt.md"
 
 function Write-Banner {

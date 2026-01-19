@@ -10,7 +10,7 @@ You are an autonomous coding agent tasked with implementing the PRD for the .NET
 
 ## Critical Files
 
-- **/ralph/prd.toon** - Contains all user stories with acceptance criteria
+- **/ralph/prd.json** - Contains all user stories with acceptance criteria
 - **/ralph/AGENTS.md** - Contains project context and patterns
 - **/ralph/learnings.md** - Persistent knowledge from past iterations (patterns, solutions, resolved blockers)
 - **/ralph/state/progress.txt** - Tracks current iteration and completed stories
@@ -19,12 +19,12 @@ You are an autonomous coding agent tasked with implementing the PRD for the .NET
 
 ### Step 1: Read Current State
 1. Read `/ralph/state/progress.txt` to see current iteration and completed stories
-2. Read `/ralph/prd.toon` to get the list of user stories
+2. Read `/ralph/prd.json` to get the list of user stories
 3. Read `/ralph/AGENTS.md` for project context and patterns
 4. Read `/ralph/learnings.md` to review past technical insights and resolved blockers
 
 ### Step 2: Select Next Story
-1. Find the first story in `/ralph/prd.toon` that is NOT in the completed_stories list
+1. Find the first story in `/ralph/prd.json` that is NOT in the completed_stories list
 2. If all stories are complete, update `/ralph/state/progress.txt` with `status: complete` and exit
 
 ### Step 3: Implement the Story
@@ -85,7 +85,7 @@ completed_stories: [<story_id>, <story_id>, ...]
 ## Story Selection Logic
 
 ```
-stories_from_prd = read prd.toon stories
+stories_from_prd = read prd.json stories
 completed = read progress.txt completed_stories
 next_story = first story in stories_from_prd where story.id not in completed
 ```
@@ -93,7 +93,7 @@ next_story = first story in stories_from_prd where story.id not in completed
 ## Important Notes
 
 - If you encounter a blocker, document it in progress.txt and exit
-- Do not modify prd.toon - it is the source of truth
+- Do not modify prd.json - it is the source of truth
 - Always read AGENTS.md for the latest project patterns
 - Keep your changes focused and reviewable
 
