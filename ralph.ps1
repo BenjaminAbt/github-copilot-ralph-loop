@@ -9,8 +9,8 @@ $ErrorActionPreference = "Stop"
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptRoot
 
-# $Model = "gpt-5-mini"
-$Model = "gpt-5.1-codex-mini"
+$Model = "gpt-5-mini"
+# $Model = "gpt-5.1-codex-mini"
 
 $ProgressFile = Join-Path $scriptRoot "ralph\state\progress.txt"
 $PrdFile = Join-Path $scriptRoot "ralph\prd.json"
