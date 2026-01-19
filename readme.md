@@ -54,8 +54,9 @@ $Model = "gpt-5.1-codex-mini"
 
 - **ralph/** - Prompts, PRDs, and loop state
   - **ralph/prd.json** - Task definitions (product requirements) for the loop
-  - **ralph/state/** - Loop progress and learnings
+  - **ralph/state/** - Loop progress
   - **ralph/AGENTS.md** - Instructions for coding agents
+  - **ralph/learnings.md** - Loop learnings and observations
 - **ralph.ps1** - Main script to run the loop
 
 ## Requirements
@@ -69,7 +70,7 @@ $Model = "gpt-5.1-codex-mini"
 1. The PowerShell script feeds PRD files to Copilot CLI in iterations
 2. Copilot generates code, tests, and validates output
 3. Loop continues until completion or max iterations reached
-4. Progress and learnings are saved in `ralph/state/`
+4. Progress and learnings are saved in `ralph/learnings.md`
 
 ## Sample Files Generated
 
