@@ -10,7 +10,7 @@ You are an autonomous coding agent tasked with implementing the PRD for the .NET
 
 ## Critical Files
 
-- **/ralph/prds.json** - Contains all user stories with acceptance criteria
+- **/ralph/prd.json** - Contains all user stories with acceptance criteria
 - **/ralph/AGENTS.md** - Contains project context and patterns
 - **/ralph/learnings.md** - Persistent knowledge from past iterations (patterns, solutions, resolved blockers)
 - **/ralph/state/progress.txt** - Tracks current iteration and completed stories
@@ -19,12 +19,12 @@ You are an autonomous coding agent tasked with implementing the PRD for the .NET
 
 ### Step 1: Read Current State
 1. Read `/ralph/state/progress.txt` to see current iteration and completed stories
-2. Read `/ralph/prds.json` to get the list of user stories
+2. Read `/ralph/prd.json` to get the list of user stories
 3. Read `/ralph/AGENTS.md` for project context and patterns
 4. Read `/ralph/learnings.md` to review past technical insights and resolved blockers
 
 ### Step 2: Select Next Story
-1. Find the first story in `/ralph/prds.json` that is NOT in the completed_stories list
+1. Find the first story in `/ralph/prd.json` that is NOT in the completed_stories list
 2. If all stories are complete, update `/ralph/state/progress.txt` with `status: complete` and exit
 
 ### Step 3: Implement the Story
