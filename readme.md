@@ -197,6 +197,11 @@ Starting iteration 3 of 10
       gpt-5-mini           467.7k input, 11.6k output, 439.6k cache read (Est. 0 Premium requests)
   Total usage est:       0 Premium requests
    + ------------------------------------------------------------
+
+
+╔═══════════════════════════════════════════════════════════════╗
+║              All stories complete! Great success!             ║
+╚═══════════════════════════════════════════════════════════════╝
 ```
 
 
